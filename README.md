@@ -4,3 +4,4 @@
 - [ ] change namespace
 - [ ] finish FASTA file reader for extreme long seqs
 - [ ] add '>' counter
+- [ ] clean unnecessary head files
