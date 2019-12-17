@@ -40,7 +40,7 @@ public:
 		,	numParts(0)
 	{};
 
-	FastaDataChunk* readNextChunk();
+	FastaChunk* readNextChunk();
 	
 	int64 Read(byte* memory_, uint64 size_)
 	{

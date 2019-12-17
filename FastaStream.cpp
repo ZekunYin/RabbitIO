@@ -15,8 +15,9 @@ namespace dsrc
 namespace fq
 {
 
-bool FastaFileReader::ReadNextChunk(FastaDataChunk* chunk_)
+bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_)
 {
+	FastaDataChunk *chunk_ = dataChunk_->chunk;
 	if (Eof())
 	{
 		chunk_->size = 0;
@@ -44,15 +45,18 @@ bool FastaFileReader::ReadNextChunk(FastaDataChunk* chunk_)
 	{
 		if (r == toRead)	// somewhere before end
 		{
-		    uint64 chunkEnd = cbufSize - SwapBufferSize; // Swapbuffersize: 1 << 13
-			//std::cout << "chunkend  cbufsize Swapbuffersize: " << chunkEnd <<" "<< cbufSize << " " << SwapBufferSize << std::endl;
-			chunkEnd = GetNextRecordPos(data, chunkEnd, cbufSize);
-			chunk_->size = chunkEnd - 1;
-			if (usesCrlf)
-				chunk_->size -= 1;
+		    //uint64 chunkEnd = cbufSize - SwapBufferSize; // Swapbuffersize: 1 << 13
+			////std::cout << "chunkend  cbufsize Swapbuffersize: " << chunkEnd <<" "<< cbufSize << " " << SwapBufferSize << std::endl;
+			//chunkEnd = GetNextRecordPos(data, chunkEnd, cbufSize);
+			//chunk_->size = chunkEnd - 1; //remove \n
+			//if (usesCrlf)
+			//	chunk_->size -= 1;
 
-			std::copy(data + chunkEnd, data + cbufSize, swapBuffer.Pointer());
-			bufferSize = cbufSize - chunkEnd;
+			//std::copy(data + chunkEnd, data + cbufSize, swapBuffer.Pointer());
+			//bufferSize = cbufSize - chunkEnd;
+
+			//dealing with halo region
+			uint64 chunkEnd = findCutPos(data, cbufSize);
 		}
 		else				// at the end of file
 		{
@@ -142,6 +146,48 @@ uint64 FastaFileReader::GetNextRecordPos(uchar* data_, uint64 pos_, const uint64
 		ASSERT(data_[pos_] == '+');	// pos0 was the start of tag
 		return pos0;
 	}
+}
+
+uint64 FastaFileReader::findCutPos(uchar* data_, const uint64 size_)
+{
+	int count = 0;
+	uint64 pos_ = 0;
+	uint64 cut_ = 0;
+	if(data_[0] == '>') //start with '>'
+	{
+		while(pos_ < size_){
+			if(data_[pos_] == '>'){
+				if(FindEol(data_, pos_, size_)) //find name
+				{
+					++pos_;
+				}else{
+					cut_ = pos_; //find a cut: incomplete name
+					break;
+				}
+			}else{
+				++pos_;
+			}
+	
+		}
+
+	}else{ //start with {ACGT}
+		while(pos_ < size_){
+			if(data_[pos_] == '>'){
+				if(FindEol(data_, pos_, size_)) //find name
+				{
+					++pos_;
+				}else{
+					cut_ = pos_; //find a cut: incomplete name
+					break;
+				}
+			}else{
+				++pos_;
+			}
+	
+		}	
+	}
+
+	return cut_;	
 }
 
 } // namespace fq

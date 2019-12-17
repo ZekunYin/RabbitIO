@@ -23,6 +23,16 @@ namespace fq
 
 typedef core::DataChunk FastaDataChunk;
 
+struct FastaChunk{
+	FastaDataChunk * chunk;
+	uint64 start;
+	uint64 end;
+	uint64 nseqs;
+	bool startSplit;
+	bool endSplit;
+
+};
+
 } // namespace fq
 
 } // namespace dsrc

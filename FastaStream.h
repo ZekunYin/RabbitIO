@@ -68,6 +68,7 @@ public:
 		,	bufferSize(0)
 		,	eof(false)
 		,	usesCrlf(false)
+		,	totalSeqs(0)
 		//,	isZipped(false)
 	{	
 		//if(ends_with(fileName_,".gz")){
@@ -98,7 +99,7 @@ public:
 		return eof;
 	}
 
-	bool ReadNextChunk(FastaDataChunk* chunk_);
+	bool ReadNextChunk(FastaChunk* chunk_);
 
 	void Close()
 	{
@@ -133,6 +134,8 @@ private:
 	bool			usesCrlf;
 	bool			isZipped;
 	FILE*           mFile;
+	uint64 			halo;
+	uint64          totalSeqs;
 	//gzFile          mZipFile;
 
 	uint64 lastOneReadPos;
@@ -140,6 +143,7 @@ private:
 
 	uint64 GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
 	uint64 GetPreviousRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
+	uint64 findCutPos(uchar* data_, const uint64 size_);
 
 	void FastaSkipToEol(uchar* data_, uint64& pos_, const uint64 size_)
 	{
@@ -203,6 +207,22 @@ private:
 	}
 	
 
+	bool FindEol(uchar* data_, uint64& pos_, const uint64 size_){
+		bool found = false;
+		uint64 pos0 = pos_;
+		//TODO follow SkipToEol for both \n and \n\r
+		while(pos0 < size_){
+			if(data_[pos0] == '\n') 
+			{
+				pos_ = pos0;
+				found = true;
+				break;
+			}else{
+				pos0++;
+			}
+		}
+		return found;
+	}
 
 };
 

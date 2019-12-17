@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <vector>
 #include <map>
+#include <cstdio>
 
 #include "FastaIO.h"
 #include "Buffer.h"
@@ -22,12 +23,16 @@ namespace dsrc
 namespace fq
 {
 
-FastaDataChunk* FastaReader::readNextChunk(){
+FastaChunk* FastaReader::readNextChunk(){
 	FastaDataChunk* part = NULL;
 	recordsPool.Acquire(part);
-	if(fileReader.ReadNextChunk(part))
+	FastaChunk *dataPart = new FastaChunk;
+	dataPart->chunk = part;
+	if(fileReader.ReadNextChunk(dataPart))
 	{
-		return part;
+		printf("datapart in reader->%p\n", dataPart);
+		printf("part in reader->%p\n", dataPart->chunk);
+		return dataPart;
 	}
 	else
 	{
