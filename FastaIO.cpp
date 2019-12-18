@@ -28,10 +28,8 @@ FastaChunk* FastaReader::readNextChunk(){
 	recordsPool.Acquire(part);
 	FastaChunk *dataPart = new FastaChunk;
 	dataPart->chunk = part;
-	if(fileReader.ReadNextChunk(dataPart))
+	if(fileReader.ReadNextChunk(dataPart, this->seqInfos))
 	{
-		//printf("datapart in reader->%p\n", dataPart);
-		//printf("part in reader->%p\n", dataPart->chunk);
 		return dataPart;
 	}
 	else

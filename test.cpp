@@ -13,6 +13,8 @@ int main(){
 
 	//init datapool
 	string fileName = "./data/clean_total_genomic.fna";
+	//vector<dsrc::fq::SeqInfo<MySketch> > seqInfos;
+
 	dsrc::fq::FastaDataPool *fastaPool = new dsrc::fq::FastaDataPool(16, 1<<24);
 	dsrc::fq::FastaFileReader *fileReader = new dsrc::fq::FastaFileReader(fileName);
 	dsrc::fq::FastaReader *fastaReader = new dsrc::fq::FastaReader(*fileReader, *fastaPool);

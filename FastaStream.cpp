@@ -16,7 +16,7 @@ namespace dsrc
 namespace fq
 {
 
-bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_)
+bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos)
 {
 	std::cout << "==================Next Chunk =========================" << std::endl;
 	FastaDataChunk *chunk_ = dataChunk_->chunk;
@@ -100,79 +100,6 @@ bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_)
 	}
 
 	return true;
-}
-
-//需要向前找到倒数第2条read的开头，不仅仅是@号这么简单
-uint64 FastaFileReader::GetPreviousRecordPos(uchar* data_, uint64 pos_,const uint64 size_)
-{	int offset =2;
-
-	SkipToSol(data_,pos_,size_);
-	if(usesCrlf){
-		offset=3;
-	}
-	while(data_[pos_+offset] !='@'){ //+2
-		//std::cout<<"pos_"<<pos_<<std::endl;
-		SkipToSol(data_,pos_,size_);
-	}
-	//标记一下，看是否是质量分
-	uint64 pos0=pos_+offset;
-	SkipToSol(data_,pos_,size_);
-	if(data_[pos_+offset]== '+'){
-		//说明上一个@号是质量分
-		SkipToSol(data_,pos_,size_);
-		SkipToSol(data_,pos_,size_);
-		//此时应该是name
-		if(data_[pos_+offset]!='@'){
-			std::cout << "core dump is " << data_[pos_+offset] << std::endl;
-		}else{
-			return pos_+offset;
-		}
-	}
-	else{
-		return pos0;
-	}
-	return 0;
-}
-
-uint64 FastaFileReader::GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_)
-{
-	SkipToEol(data_, pos_, size_);
-	++pos_;
-
-	if(1)//if(fasta) fastabyxxm
-	{
-		while(data_[pos_] != '>')
-		{
-			FastaSkipToEol(data_, pos_, size_);
-			++pos_;
-		}
-		uint64 pos0 = pos_;
-		return pos0;
-	}
-			
-	else//if(fastq) 
-	{
-		// find beginning of the next record
-		while (data_[pos_] != '@')
-		{
-			SkipToEol(data_, pos_, size_);
-			++pos_;
-		}
-		uint64 pos0 = pos_;
-			
-		SkipToEol(data_, pos_, size_);
-		++pos_;
-
-		if (data_[pos_] == '@')			// previous one was a quality field
-			return pos_;
-		
-		SkipToEol(data_, pos_, size_);
-		++pos_;
-		if(data_[pos_] != '+')
-			std::cout << "core dump is pos: " << pos_ << " char: " << data_[pos_] << std::endl;	
-		ASSERT(data_[pos_] == '+');	// pos0 was the start of tag
-		return pos0;
-	}
 }
 
 uint64 FastaFileReader::FindCutPos(uchar* data_, const uint64 size_, const uint64 halo_)

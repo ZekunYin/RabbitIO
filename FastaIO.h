@@ -30,8 +30,7 @@ namespace fq
 typedef core::TDataQueue<FastaDataChunk> FastaDataQueue;
 typedef core::TDataPool<FastaDataChunk> FastaDataPool;
 
-
-class FastaReader //: public IFastqIoOperator
+class FastaReader
 {
 public:
     FastaReader(FastaFileReader& reader_, FastaDataPool& pool_)
@@ -47,6 +46,9 @@ public:
 		int64 n = fileReader.Read(memory_, size_);
 		return n;
 	}
+
+public:	
+	SeqInfos seqInfos;
 
 private:
 

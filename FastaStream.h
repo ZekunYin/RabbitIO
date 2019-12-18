@@ -101,7 +101,7 @@ public:
 		return eof;
 	}
 
-	bool ReadNextChunk(FastaChunk* chunk_);
+	bool ReadNextChunk(FastaChunk* chunk_, SeqInfos& seqInfos);
 
 	void Close()
 	{
@@ -143,8 +143,8 @@ private:
 	uint64 lastOneReadPos;
 	uint64 lastTwoReadPos;
 
-	uint64 GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
-	uint64 GetPreviousRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
+	//uint64 GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
+	//uint64 GetPreviousRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
 	uint64 FindCutPos(uchar* data_, const uint64 size_, const uint64 halo_);
 
 	void FastaSkipToEol(uchar* data_, uint64& pos_, const uint64 size_)

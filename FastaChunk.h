@@ -15,6 +15,8 @@
 #include "Buffer.h"
 #include "utils.h"
 
+#include <vector>
+
 namespace dsrc
 {
 
@@ -24,6 +26,7 @@ namespace fq
 typedef core::DataChunk FastaDataChunk;
 
 struct FastaChunk{
+
 	FastaDataChunk * chunk;
 	uint64 start;
 	uint64 end;
@@ -32,6 +35,29 @@ struct FastaChunk{
 	bool endSplit;
 
 };
+
+template<class SketchRes>
+struct SeqInfo{
+	
+	uint64 gid; //sequence global id		
+	std::vector<SketchRes> sketchs; 
+	bool is_complete;
+
+};
+
+//TODO: replace it with real sketch library
+class MySketch {
+public:
+	MySketch(){};
+	~MySketch(){};
+	void merge(){};
+
+public:
+	std::vector<uint64> sketch;
+	
+};
+
+typedef std::vector<SeqInfo<MySketch> > SeqInfos;
 
 } // namespace fq
 
