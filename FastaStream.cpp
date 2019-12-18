@@ -59,7 +59,7 @@ bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos)
 			//bufferSize = cbufSize - chunkEnd;
 
 			//dealing with halo region
-			uint64 chunkEnd = FindCutPos(data, cbufSize, mHalo);
+			uint64 chunkEnd = FindCutPos(dataChunk_, data, cbufSize, mHalo, seqInfos);
 			chunk_->size = chunkEnd;// - 1; //1 char back from last '>'
 
 			//debug only
@@ -75,8 +75,9 @@ bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos)
 				chunk_->size -= 1;
 			//copy tail to swapBuffer
 			//if(data[chunkEnd] == '\n') chunkEnd++;
-			std::copy(data + chunkEnd, data + cbufSize, swapBuffer.Pointer());
-			bufferSize = cbufSize - chunkEnd;
+			//TODO: dealing with halo region
+			std::copy(data + chunkEnd - mHalo, data + cbufSize, swapBuffer.Pointer());
+			bufferSize = cbufSize - chunkEnd + mHalo;
 
 		}
 		else				// at the end of file
@@ -85,6 +86,8 @@ bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos)
 			if (usesCrlf)
 				chunk_->size -= 1;
 
+			//only for get seqsinfo
+			uint64 chunkEnd = FindCutPos(dataChunk_, data, chunk_->size, mHalo, seqInfos);
 			//debug only
 			//std::string content((char*)data, chunk_->size);
 			//std::cout << "tail content ori: " << data << std::endl;
@@ -102,16 +105,19 @@ bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos)
 	return true;
 }
 
-uint64 FastaFileReader::FindCutPos(uchar* data_, const uint64 size_, const uint64 halo_)
+uint64 FastaFileReader::FindCutPos(FastaChunk* dataChunk_, uchar* data_, const uint64 size_, const uint64 halo_, SeqInfos& seqInfos)
 {
 	int count = 0;
 	uint64 pos_ = 0;
 	uint64 cut_ = 0; //cut_ point to next '>'
 	uint64 lastSeq_ = 0; //-> the start of last sequences content
 	uint64 lastName_ = 0; //-> the last '>'
+	OneSeqInfo seqInfo;
 	
+
 	if(data_[0] == '>') //start with '>'
 	{
+		dataChunk_->start = this->totalSeqs;	
 		while(pos_ < size_){
 			if(data_[pos_] == '>'){
 				lastName_ = pos_;
@@ -119,6 +125,11 @@ uint64 FastaFileReader::FindCutPos(uchar* data_, const uint64 size_, const uint6
 				{
 					++pos_;
 					lastSeq_ = pos_;
+
+					seqInfo.gid = this->totalSeqs;
+					seqInfos.push_back(seqInfo);
+
+					this->totalSeqs++;
 				}else{
 					cut_ = pos_; //find a cut: incomplete name
 					std::cout << "cut char: " << (char)data_[cut_] << std::endl;
@@ -131,6 +142,7 @@ uint64 FastaFileReader::FindCutPos(uchar* data_, const uint64 size_, const uint6
 		}
 
 	}else{ //start with {ACGT}
+		dataChunk_->start = this->totalSeqs - 1;	
 		while(pos_ < size_){
 			if(data_[pos_] == '>'){
 				lastName_ = pos_;
@@ -138,9 +150,12 @@ uint64 FastaFileReader::FindCutPos(uchar* data_, const uint64 size_, const uint6
 				{
 					++pos_;
 					lastSeq_ = pos_;
+					seqInfo.gid = this->totalSeqs;
+					seqInfos.push_back(seqInfo);
+					this->totalSeqs++;
 				}else{
 					cut_ = pos_; //find a cut -> '>'
-					std::cout << "cut char: " << (char)data_[cut_] << std::endl;
+					//std::cout << "cut char: " << (char)data_[cut_] << std::endl;
 					break;
 				}
 			}else{
@@ -156,8 +171,15 @@ uint64 FastaFileReader::FindCutPos(uchar* data_, const uint64 size_, const uint6
 		uint64 lastSeqLen_ = size_ - lastSeq_;	
 		if(lastSeqLen_ < halo_){
 			cut_ = lastName_;	
+			this->totalSeqs--;
 		}
 	}
+	
+	dataChunk_->nseqs = this->totalSeqs - dataChunk_->start;
+	dataChunk_->end = this->totalSeqs - 1;
+
+	if(cut_ != 0) std::cout << "cut: " << cut_ << std::endl;
+
 	return cut_ ? cut_ : size_;	
 }
 

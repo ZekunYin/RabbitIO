@@ -16,6 +16,7 @@
 #include "FastaChunk.h"
 #include "utils.h"
 #include <iostream>
+#include <string>
 
 #if defined (_WIN32)
 #   define _CRT_SECURE_NO_WARNINGS
@@ -64,7 +65,7 @@ private:
 	//static const uint32 SwapBufferSize = 1 << 13;
 
 public:
-	FastaFileReader(const std::string& fileName_, uint64 halo = 0)
+	FastaFileReader(const std::string& fileName_, uint64 halo = 21)
 		:	swapBuffer(SwapBufferSize)
 		,	bufferSize(0)
 		,	eof(false)
@@ -90,6 +91,7 @@ public:
 
 	~FastaFileReader()
 	{
+		std::cout << "totalSeqs: " << this->totalSeqs << std::endl;
 		if(mFile != NULL)
 			Close();
 		delete mFile;
@@ -137,15 +139,19 @@ private:
 	bool			isZipped;
 	FILE*           mFile;
 	uint64 			mHalo;
+
+public:
 	uint64          totalSeqs;
+	uint64			gid = 0;
 	//gzFile          mZipFile;
 
-	uint64 lastOneReadPos;
-	uint64 lastTwoReadPos;
+	//uint64 lastOneReadPos;
+	//uint64 lastTwoReadPos;
 
 	//uint64 GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
 	//uint64 GetPreviousRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
-	uint64 FindCutPos(uchar* data_, const uint64 size_, const uint64 halo_);
+private:
+	uint64 FindCutPos(FastaChunk* dataChunk_, uchar* data_, const uint64 size_, const uint64 halo_, SeqInfos& seqInfos);
 
 	void FastaSkipToEol(uchar* data_, uint64& pos_, const uint64 size_)
 	{
@@ -216,7 +222,9 @@ private:
 		while(pos0 < size_){
 			if(data_[pos0] == '\n') 
 			{
-				std::cout << "enter at: " << pos0 << std::endl;
+				//std::cout << "enter at: " << pos0 << std::endl;
+				//std::string name((char*)(data_ + pos_), pos0-pos_);
+				//std::cerr << name << std::endl;
 				pos_ = pos0;
 				found = true;
 				break;

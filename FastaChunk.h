@@ -16,6 +16,7 @@
 #include "utils.h"
 
 #include <vector>
+#include <iostream>
 
 namespace dsrc
 {
@@ -31,9 +32,15 @@ struct FastaChunk{
 	uint64 start;
 	uint64 end;
 	uint64 nseqs;
-	bool startSplit;
-	bool endSplit;
+	//bool startSplit;
+	//bool endSplit;
 
+	void print(){
+		std::cout << "chunk start: " << this->start << std::endl;	
+		std::cout << "chunk end: "   << this->end   << std::endl;	
+		std::cout << "chunk nseqs: " << this->nseqs << std::endl;	
+		return;
+	}
 };
 
 template<class SketchRes>
@@ -57,6 +64,7 @@ public:
 	
 };
 
+typedef SeqInfo<MySketch> OneSeqInfo;
 typedef std::vector<SeqInfo<MySketch> > SeqInfos;
 
 } // namespace fq
