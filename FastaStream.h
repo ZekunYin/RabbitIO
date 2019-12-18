@@ -15,6 +15,7 @@
 //#include "zlib/zlib.h" //remove support for compressed files
 #include "FastaChunk.h"
 #include "utils.h"
+#include <iostream>
 
 #if defined (_WIN32)
 #   define _CRT_SECURE_NO_WARNINGS
@@ -59,16 +60,17 @@ class FastaFileReader
 {
 private:
 	//static const uint32 SwapBufferSize = 1 << 20;
-	static const uint32 SwapBufferSize = 1 << 24;//16MB
+	static const uint32 SwapBufferSize = 1 << 26;//16MB
 	//static const uint32 SwapBufferSize = 1 << 13;
 
 public:
-	FastaFileReader(const std::string& fileName_)
+	FastaFileReader(const std::string& fileName_, uint64 halo = 0)
 		:	swapBuffer(SwapBufferSize)
 		,	bufferSize(0)
 		,	eof(false)
 		,	usesCrlf(false)
 		,	totalSeqs(0)
+		,	mHalo(halo)
 		//,	isZipped(false)
 	{	
 		//if(ends_with(fileName_,".gz")){
@@ -134,7 +136,7 @@ private:
 	bool			usesCrlf;
 	bool			isZipped;
 	FILE*           mFile;
-	uint64 			halo;
+	uint64 			mHalo;
 	uint64          totalSeqs;
 	//gzFile          mZipFile;
 
@@ -143,7 +145,7 @@ private:
 
 	uint64 GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
 	uint64 GetPreviousRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
-	uint64 findCutPos(uchar* data_, const uint64 size_);
+	uint64 FindCutPos(uchar* data_, const uint64 size_, const uint64 halo_);
 
 	void FastaSkipToEol(uchar* data_, uint64& pos_, const uint64 size_)
 	{
@@ -214,6 +216,7 @@ private:
 		while(pos0 < size_){
 			if(data_[pos0] == '\n') 
 			{
+				std::cout << "enter at: " << pos0 << std::endl;
 				pos_ = pos0;
 				found = true;
 				break;

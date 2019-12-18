@@ -9,6 +9,7 @@
  
 #include "FastaStream.h"
 #include <iostream>
+#include <string>
 namespace dsrc
 {
 
@@ -17,6 +18,7 @@ namespace fq
 
 bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_)
 {
+	std::cout << "==================Next Chunk =========================" << std::endl;
 	FastaDataChunk *chunk_ = dataChunk_->chunk;
 	if (Eof())
 	{
@@ -39,7 +41,8 @@ bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_)
 
 	// read the next chunk
 	int64 r = this->Read(data + chunk_->size, toRead);
-	//std::cout << "r is :" << r << std::endl;
+	std::cout << "r is :" << r << std::endl;
+	std::cout << "toRead: " << toRead << std::endl;
 	
 	if (r > 0)
 	{
@@ -56,13 +59,37 @@ bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_)
 			//bufferSize = cbufSize - chunkEnd;
 
 			//dealing with halo region
-			uint64 chunkEnd = findCutPos(data, cbufSize);
+			uint64 chunkEnd = FindCutPos(data, cbufSize, mHalo);
+			chunk_->size = chunkEnd;// - 1; //1 char back from last '>'
+
+			//debug only
+			//std::string content((char*)data, chunk_->size);
+			//std::cout << "chunkEnd data: " << (char)data[chunkEnd-1] << std::endl;
+			//std::cout << "chunkEnd: " << (uint64)chunkEnd << std::endl;
+			//std::cout << "chunk_->size: " << chunk_->size << std::endl;
+			//std::cout << "content_ori: " << data << std::endl;
+			//std::cout << "content    : " << content << std::endl;
+			//end debug
+			
+			if (usesCrlf)
+				chunk_->size -= 1;
+			//copy tail to swapBuffer
+			//if(data[chunkEnd] == '\n') chunkEnd++;
+			std::copy(data + chunkEnd, data + cbufSize, swapBuffer.Pointer());
+			bufferSize = cbufSize - chunkEnd;
+
 		}
 		else				// at the end of file
 		{
 			chunk_->size += r - 1;	// skip the last EOF symbol
 			if (usesCrlf)
 				chunk_->size -= 1;
+
+			//debug only
+			//std::string content((char*)data, chunk_->size);
+			//std::cout << "tail content ori: " << data << std::endl;
+			//std::cout << "tail content    : " << content << std::endl;
+			//end debug
 
 			eof = true;
 		}
@@ -148,20 +175,26 @@ uint64 FastaFileReader::GetNextRecordPos(uchar* data_, uint64 pos_, const uint64
 	}
 }
 
-uint64 FastaFileReader::findCutPos(uchar* data_, const uint64 size_)
+uint64 FastaFileReader::FindCutPos(uchar* data_, const uint64 size_, const uint64 halo_)
 {
 	int count = 0;
 	uint64 pos_ = 0;
-	uint64 cut_ = 0;
+	uint64 cut_ = 0; //cut_ point to next '>'
+	uint64 lastSeq_ = 0; //-> the start of last sequences content
+	uint64 lastName_ = 0; //-> the last '>'
+	
 	if(data_[0] == '>') //start with '>'
 	{
 		while(pos_ < size_){
 			if(data_[pos_] == '>'){
+				lastName_ = pos_;
 				if(FindEol(data_, pos_, size_)) //find name
 				{
 					++pos_;
+					lastSeq_ = pos_;
 				}else{
 					cut_ = pos_; //find a cut: incomplete name
+					std::cout << "cut char: " << (char)data_[cut_] << std::endl;
 					break;
 				}
 			}else{
@@ -173,11 +206,14 @@ uint64 FastaFileReader::findCutPos(uchar* data_, const uint64 size_)
 	}else{ //start with {ACGT}
 		while(pos_ < size_){
 			if(data_[pos_] == '>'){
+				lastName_ = pos_;
 				if(FindEol(data_, pos_, size_)) //find name
 				{
 					++pos_;
+					lastSeq_ = pos_;
 				}else{
-					cut_ = pos_; //find a cut: incomplete name
+					cut_ = pos_; //find a cut -> '>'
+					std::cout << "cut char: " << (char)data_[cut_] << std::endl;
 					break;
 				}
 			}else{
@@ -187,7 +223,15 @@ uint64 FastaFileReader::findCutPos(uchar* data_, const uint64 size_)
 		}	
 	}
 
-	return cut_;	
+	//no tail cut
+	//make sure that cbufSize > name_len + halo
+	if(cut_ == 0){
+		uint64 lastSeqLen_ = size_ - lastSeq_;	
+		if(lastSeqLen_ < halo_){
+			cut_ = lastName_;	
+		}
+	}
+	return cut_ ? cut_ : size_;	
 }
 
 } // namespace fq

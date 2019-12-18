@@ -30,8 +30,8 @@ FastaChunk* FastaReader::readNextChunk(){
 	dataPart->chunk = part;
 	if(fileReader.ReadNextChunk(dataPart))
 	{
-		printf("datapart in reader->%p\n", dataPart);
-		printf("part in reader->%p\n", dataPart->chunk);
+		//printf("datapart in reader->%p\n", dataPart);
+		//printf("part in reader->%p\n", dataPart->chunk);
 		return dataPart;
 	}
 	else

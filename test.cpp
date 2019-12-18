@@ -12,8 +12,8 @@ using namespace std;
 int main(){
 
 	//init datapool
-	string fileName = "test.fna";
-	dsrc::fq::FastaDataPool *fastaPool = new dsrc::fq::FastaDataPool(128, 1 << 26);
+	string fileName = "./data/clean_total_genomic.fna";
+	dsrc::fq::FastaDataPool *fastaPool = new dsrc::fq::FastaDataPool(16, 1<<24);
 	dsrc::fq::FastaFileReader *fileReader = new dsrc::fq::FastaFileReader(fileName);
 	dsrc::fq::FastaReader *fastaReader = new dsrc::fq::FastaReader(*fileReader, *fastaPool);
 	dsrc::fq::FastaChunk *chunk;
@@ -22,8 +22,8 @@ int main(){
 	while((chunk = fastaReader->readNextChunk()) != NULL)
 	{
 		nChunks++;	
-		printf("datapart->%p\n", chunk);	
-		printf("part->%p\n", chunk->chunk);	
+		fastaPool->Release(chunk->chunk);
+		delete chunk;
 	}
 	cout << "nChunks: " << nChunks << endl;
 	return 0;
