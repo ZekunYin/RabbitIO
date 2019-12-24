@@ -23,7 +23,7 @@ namespace th = boost;
 namespace th = std;
 #endif
 
-namespace dsrc
+namespace mash
 {
 
 namespace core
@@ -133,6 +133,6 @@ public:
 
 } // namespace core
 
-} // namespace dsrc
+} // namespace mash
 
 #endif // DATA_QUEUE_H

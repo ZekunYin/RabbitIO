@@ -17,10 +17,10 @@
 #include "FastaStream.h" 
 #include "Sequence.h"
 
-namespace dsrc
+namespace mash
 {
 
-namespace fq
+namespace fa
 {
 
 FastaChunk* FastaReader::readNextChunk(){
@@ -97,6 +97,6 @@ string getLine(FastaDataChunk* &chunk, int &pos){
 	return "";
 }
 
-} // namesapce fq
+} // namesapce fa
 
-} // namespace dsrc
+} // namespace mash

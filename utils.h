@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace dsrc
+namespace mash
 {
 
 namespace core
@@ -186,7 +186,7 @@ inline uint32 bit_length(uint64 x)
 
 } // namespace core
 
-} // namespace dsrc
+} // namespace mash
 
 
 #endif

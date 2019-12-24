@@ -44,83 +44,10 @@
 // TODO: refactor raw data structs to avoid using <string> as a member
 #include <string>
 
-
-
 #define COMPILE_TIME_ASSERT(COND, MSG) typedef char static_assertion_##MSG[(!!(COND))*2-1]
 #define COMPILE_TIME_ASSERT1(X, L) COMPILE_TIME_ASSERT(X,static_assertion_at_line_##L)
 #define COMPILE_TIME_ASSERT2(X, L) COMPILE_TIME_ASSERT1(X,L)
 #define STATIC_ASSERT(X)    COMPILE_TIME_ASSERT2(X,__LINE__)
-
-
-//namespace dsrc
-//{
-//
-//namespace fq
-//{
-//
-//// ********************************************************************************************
-//struct FastqDatasetType
-//{
-//	static const uint32 AutoQualityOffset = 0;
-//	static const uint32 DefaultQualityOffset = 33;
-//
-//	uint32	qualityOffset;
-//	bool	plusRepetition;
-//	bool	colorSpace;
-//
-//
-//	FastqDatasetType()
-//		:	qualityOffset(AutoQualityOffset)
-//		,	plusRepetition(false)
-//		,	colorSpace(false)
-//	{}
-//
-//	static FastqDatasetType Default()
-//	{
-//		FastqDatasetType ds;
-//		ds.qualityOffset = AutoQualityOffset;
-//		ds.plusRepetition = false;
-//		ds.colorSpace = false;
-//		return ds;
-//	}
-//};
-//
-//struct StreamsInfo
-//{
-//	enum StreamName
-//	{
-//		MetaStream = 0,
-//		TagStream,
-//		DnaStream,
-//		QualityStream,
-//
-//		StreamCount = 4
-//	};
-//
-//	uint64 sizes[4];
-//
-//	StreamsInfo()
-//	{
-//		Clear();
-//	}
-//
-//	void Clear()
-//	{
-//		std::fill(sizes, sizes + StreamCount, 0);
-//	}
-//};
-//
-//struct FastqRecord;
-//
-//} // namespace fq
-//
-//
-//
-//
-//
-//} // namespace dsrc
-
-
 
 #endif // _COMMON_H
 

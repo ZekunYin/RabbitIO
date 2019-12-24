@@ -51,10 +51,10 @@
 #   define FCLOSE   fclose
 #endif
 
-namespace dsrc
+namespace mash
 {
 
-namespace fq
+namespace fa
 {
 
 class FastaFileReader
@@ -238,8 +238,8 @@ private:
 };
 
 
-} // namespace fq
+} // namespace fa
 
-} // namespace dsrc
+} // namespace mash
 
 #endif // H_FASTQSTREAM

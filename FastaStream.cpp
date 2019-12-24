@@ -10,10 +10,11 @@
 #include "FastaStream.h"
 #include <iostream>
 #include <string>
-namespace dsrc
+
+namespace mash
 {
 
-namespace fq
+namespace fa
 {
 
 bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos)
@@ -183,7 +184,7 @@ uint64 FastaFileReader::FindCutPos(FastaChunk* dataChunk_, uchar* data_, const u
 	return cut_ ? cut_ : size_;	
 }
 
-} // namespace fq
+} // namespace fa
 
-} // namespace dsrc
+} // namespace mash
 

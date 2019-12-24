@@ -38,7 +38,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace dsrc
+namespace mash
 {
 
 // basic types
@@ -77,7 +77,7 @@ public:
 	}
 };
 
-} // namespace dsrc
+} // namespace mash
 
 
 #endif // H_GLOBALS

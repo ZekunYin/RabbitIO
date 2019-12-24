@@ -3,9 +3,9 @@
 
 #include <string>
 
-namespace dsrc
+namespace mash
 {
-namespace fq
+namespace fa
 {
 
 using namespace std;
@@ -28,6 +28,6 @@ public:
 	bool mComplete;	
 };
 
-} //dsrc
-} //fq
+} //namespace mash
+} //namespace fa
 #endif // H_SEQUENCE

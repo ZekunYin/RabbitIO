@@ -18,10 +18,10 @@ int main(){
 	
 	//vector<dsrc::fq::SeqInfo<MySketch> > seqInfos;
 
-	dsrc::fq::FastaDataPool *fastaPool = new dsrc::fq::FastaDataPool(16, 1<<26);
-	dsrc::fq::FastaFileReader *fileReader = new dsrc::fq::FastaFileReader(fileName);
-	dsrc::fq::FastaReader *fastaReader = new dsrc::fq::FastaReader(*fileReader, *fastaPool);
-	dsrc::fq::FastaChunk *chunk;
+	mash::fa::FastaDataPool *fastaPool    = new mash::fa::FastaDataPool(16, 1<<26);
+	mash::fa::FastaFileReader *fileReader = new mash::fa::FastaFileReader(fileName);
+	mash::fa::FastaReader *fastaReader    = new mash::fa::FastaReader(*fileReader, *fastaPool);
+	mash::fa::FastaChunk *chunk;
 
 	int nChunks = 0;
 	while((chunk = fastaReader->readNextChunk()) != NULL)

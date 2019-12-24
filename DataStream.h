@@ -12,7 +12,7 @@
 
 #include "Globals.h"
 
-namespace dsrc
+namespace mash
 {
 
 namespace core
@@ -51,6 +51,6 @@ public:
 
 } // namespace core
 
-} // namespace dsrc
+} // namespace mash
 
 #endif // H_DATASTREAM

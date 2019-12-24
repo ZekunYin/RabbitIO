@@ -27,7 +27,7 @@ namespace th = boost;
 namespace th = std;
 #endif
 
-namespace dsrc
+namespace mash
 {
 
 namespace core
@@ -113,7 +113,7 @@ public:
 
 } // namespace core
 
-} // namespace dsrc
+} // namespace mash
 
 
 #endif // H_DATA_POOL

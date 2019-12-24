@@ -18,10 +18,10 @@
 #include <vector>
 #include <iostream>
 
-namespace dsrc
+namespace mash
 {
 
-namespace fq
+namespace fa
 {
 
 typedef core::DataChunk FastaDataChunk;
@@ -67,8 +67,8 @@ public:
 typedef SeqInfo<MySketch> OneSeqInfo;
 typedef std::vector<SeqInfo<MySketch> > SeqInfos;
 
-} // namespace fq
+} // namespace fa
 
-} // namespace dsrc
+} // namespace mash
 
 #endif

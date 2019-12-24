@@ -21,10 +21,10 @@
 #include "FastaChunk.h"
 #include "Sequence.h"
 
-namespace dsrc
+namespace mash
 {
 
-namespace fq
+namespace fa
 {
 
 typedef core::TDataQueue<FastaDataChunk> FastaDataQueue;
@@ -63,8 +63,8 @@ int chunkFormat(FastaDataChunk* &chunk, std::vector<Sequence*>&, bool);
 string getSequence(FastaDataChunk* &chunk, int &pos);	//addbyxxm
 string getLine(FastaDataChunk* &chunk, int &pos);
 
-} // namespace fq
+} // namespace fa
 
-} // namespace dsrc
+} // namespace mash
 
 #endif

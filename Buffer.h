@@ -18,7 +18,7 @@
 #include "utils.h"
 
 
-namespace dsrc
+namespace mash
 {
 
 namespace core
@@ -146,7 +146,7 @@ struct DataChunk
 
 } // namespace core
 
-} // namespace dsrc
+} // namespace mash
 
 
 #endif // BUFFER_H
