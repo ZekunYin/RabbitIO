@@ -1,7 +1,3 @@
-# FAST FASTA FILE PARSER
+# FAST FASTA/FASTQ I/O FRAMEWORK 
 
-## TODO
-- [ ] change namespace
-- [ ] finish FASTA file reader for extreme long seqs
-- [ ] add '>' counter
-- [ ] clean unnecessary head files
+
